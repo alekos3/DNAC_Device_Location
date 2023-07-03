@@ -22,12 +22,12 @@ token = "eyJhbRciOiJSUzI1NiIsInR5cGI6IkpXVCJ9.eyJzdWIiOiI2MTE2YmI0YWU3YjUwODZiNT
 dnac = device_list.Dnac(base_url="https://dnac.example.com", token=token, verify=False)
 
 # returns 'list of devices'
-device_list = dnac.get_device_list_with_location()
+devices = dnac.get_device_list_with_location()
 
 
 ```
 
-## Response json (device_list variable)
+## Response json (devices variable)
 ```json
 {
 	"response": [

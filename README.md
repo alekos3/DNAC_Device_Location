@@ -31,7 +31,7 @@ devices = dnac.get_device_list_with_location()
 
 ```python
 # initializes class
-dnac = device_list.Dnac(base_url="https://dnac.example.com", username="admin", password="Cisco123" verify=False)
+dnac = device_list.Dnac(base_url="https://dnac.example.com", username="admin", password="Cisco123", verify=False)
 
 # returns 'list of devices'
 devices = dnac.get_device_list_with_location()

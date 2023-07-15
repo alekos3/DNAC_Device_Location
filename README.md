@@ -30,6 +30,8 @@ devices = dnac.get_device_list_with_location()
 ## Use Case 2 (Use username and password for authorization)
 
 ```python
+from dnac_device_list import device_list
+
 # initializes class
 dnac = device_list.Dnac(base_url="https://dnac.example.com", username="admin", password="Cisco123", verify=False)
 

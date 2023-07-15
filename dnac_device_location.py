@@ -1,44 +1,45 @@
 __author__ = "Alexios Nersessian"
 __email__ = "nersessian@gmail.com"
-__version__ = "v1.04"
+__version__ = "v1.2"
 
 import getpass
 import json
 import requests
 
+"""
+Class that gets all network devices from Cisco DNA Center and populates the location and locationName fields. The 3 API
+endpoints below are consumed in order to get the location name and location id.
 
-class DnacDeviceLocation:
-    """
-    Class that gets all network devices from DNAC and populates the location and locationName fields. The 3 API
-    endpoints below are consumed in order to get the location name and location id.
+GET /dna/intent/api/v1/network-device
+GET /dna/intent/api/v1/device-health
+GET /dna/intent/api/v1/site
 
-    /dna/intent/api/v1/network-device
-    /dna/intent/api/v1/device-health
-    /dna/intent/api/v1/site
+    MIT License
 
-        MIT License
+Copyright (c) [2023]
 
-    Copyright (c) [year] [fullname]
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
+"""
 
-    """
+
+class Dnac:
     def __init__(self, base_url, token=None, username=None, password=None, verify=None):
         self.base_url = base_url
         self.token = token
@@ -81,7 +82,7 @@ class DnacDeviceLocation:
         except Exception as e:
             print(e)
 
-    def get_network_devices(self):
+    def __get_network_devices(self):
         """
         Function gets all DNAC devices in inventory.
         :return: list of dictionaries
@@ -115,7 +116,7 @@ class DnacDeviceLocation:
             print(e)
             return
 
-    def get_all_device_location(self):  # Device health API
+    def __get_all_device_location(self):  # Device health API
         """
         This function gets all the devices from the device health API in order to get their respective location.
         :return: list of dictionaries
@@ -146,7 +147,7 @@ class DnacDeviceLocation:
 
         return device_list
 
-    def get_sites(self):
+    def __get_sites(self):
         """
         This function gets all the sites in DNAC.
 
@@ -186,20 +187,19 @@ class DnacDeviceLocation:
 
         :return: string
         """
-
         # 1. Get all sites
-        sites = self.get_sites()
+        sites = self.__get_sites()
         # print(sites)
 
         if not sites:
             return
 
         # 2. Get all devices using network-device API
-        devices_no_loc = self.get_network_devices()
+        devices_no_loc = self.__get_network_devices()
         # print(devices_no_loc)
 
         # 3. Get all devices using device-health API
-        device_health_inventory = self.get_all_device_location()
+        device_health_inventory = self.__get_all_device_location()
         # print(device_health_inventory)
 
         # 4. Create site dict
@@ -227,7 +227,7 @@ def get_name_location_from_global(devices_with_location):
 
     for device in devices_with_location:
         try:
-            hostname_to_location_dict[device.get("name")] = device.get("location")
+            hostname_to_location_dict[device["name"]] = device["location"]
         except:
             continue
 
@@ -249,9 +249,9 @@ def update_network_device_json(host_location_dict, device_list, site_dict):
 
     for device in device_list:
         try:
-            location_id = get_location_id(site_dict, host_location_dict.get(device.get("hostname")))
+            location_id = get_location_id(site_dict, host_location_dict[device["hostname"]])
             device["location"] = location_id
-            device["locationName"] = host_location_dict.get(device.get("hostname"))
+            device["locationName"] = host_location_dict[device["hostname"]]
             response_list.append(device)
 
         except:

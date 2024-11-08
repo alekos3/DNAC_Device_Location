@@ -121,7 +121,7 @@ class Dnac:
         This function gets all the devices from the device health API in order to get their respective location.
         :return: list of dictionaries
         """
-        limit = 1000
+        limit = 200 # Do not increase; there seems to be a bug in DNAC that returns duplicates if set above 200
         offset = 1
         device_list = []
 
